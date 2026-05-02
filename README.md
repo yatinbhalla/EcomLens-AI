@@ -1,20 +1,37 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# EcomLens AI
 
-# Run and deploy your AI Studio app
+Generate professional e-commerce product photography from ordinary product shots using Google Gemini AI.
 
-This contains everything you need to run your app locally.
+Built for SMB sellers who can't afford professional photography but need listing-quality images to compete on platforms like Amazon, Flipkart, and Meesho.
 
-View your app in AI Studio: https://ai.studio/apps/c6de8e55-c590-4f3f-8705-53edc34a2adc
+We use the following tech stack:
+- Google Gemini for image understanding and generation
+- TypeScript + React for the interface
+- Tailwind CSS for styling
 
-## Run Locally
+## 🚀 Features
 
-**Prerequisites:**  Node.js
+* **Background Replacement:** Places products on clean white, gradient, or lifestyle backgrounds
+* **Lighting Enhancement:** AI-optimized lighting that makes products look studio-shot
+* **Multi-Angle Generation:** Creates perspective variations from a single input image
+* **Platform Presets:** Auto-sizes and optimizes output for Amazon, Flipkart, Meesho, Shopify, and Instagram
+* **Batch Mode:** Processes entire product catalogs in one session
+* **Before/After Preview:** Side-by-side comparison so you can validate quality before downloading
 
+## Setup
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+git clone https://github.com/yatinbhalla/EcomLens-AI.git
+cd EcomLens-AI
+npm install
+echo "GEMINI_API_KEY=your_key_here" > .env.local
+npm run dev
+```
+
+## Author
+
+Yatin Bhalla
+<br>
+🛍️ PM & AI builder | Managing retail businesses | PG Product Management @ BITS School of Management
+<br>
+🔗 [linkedin.com/in/yatin-bhalla-834632238](https://linkedin.com/in/yatin-bhalla-834632238)
