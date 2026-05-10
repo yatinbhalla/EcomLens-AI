@@ -42,13 +42,13 @@ export const PromptControls: React.FC<PromptControlsProps> = ({
         <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
           <Settings2 className="w-4 h-4" /> Image Dimensions
         </label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="flex flex-wrap gap-2">
           {ASPECT_RATIOS.map((ratio) => (
             <button
               key={ratio.value}
               onClick={() => onChange({ ...settings, aspectRatio: ratio.value })}
               className={`
-                px-3 py-2 text-sm rounded-lg border transition-all
+                px-3 py-2 text-sm rounded-lg border transition-all flex-1 min-w-[90px]
                 ${settings.aspectRatio === ratio.value 
                   ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' 
                   : 'border-gray-200 text-gray-600 hover:border-gray-300'
@@ -59,6 +59,35 @@ export const PromptControls: React.FC<PromptControlsProps> = ({
             </button>
           ))}
         </div>
+        
+        {settings.aspectRatio === AspectRatio.CUSTOM && (
+          <div className="flex gap-4 mt-3 bg-gray-50 border border-gray-200 p-4 rounded-xl">
+             <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Width (px)</label>
+                <input
+                   type="number"
+                   min="1"
+                   max="4096"
+                   value={settings.customWidth || ''}
+                   onChange={(e) => onChange({...settings, customWidth: e.target.value})}
+                   className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition-all"
+                   placeholder="e.g. 1080"
+                />
+             </div>
+             <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Height (px)</label>
+                <input
+                   type="number"
+                   min="1"
+                   max="4096"
+                   value={settings.customHeight || ''}
+                   onChange={(e) => onChange({...settings, customHeight: e.target.value})}
+                   className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition-all"
+                   placeholder="e.g. 1920"
+                />
+             </div>
+          </div>
+        )}
       </div>
 
       {/* Preset Styles */}

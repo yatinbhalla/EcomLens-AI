@@ -22,4 +22,5 @@ export const ASPECT_RATIOS = [
   { label: '3:4 Portrait', value: AspectRatio.PORTRAIT },
   { label: '4:3 Landscape', value: AspectRatio.LANDSCAPE },
   { label: '9:16 Story', value: AspectRatio.TALL },
+  { label: 'Custom', value: AspectRatio.CUSTOM },
 ];

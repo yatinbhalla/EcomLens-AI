@@ -49,3 +49,38 @@ export const downloadAllAsZip = async (images: GeneratedImage[]) => {
   const content = await zip.generateAsync({ type: "blob" });
   saveAs(content, "ecomlens_product_images.zip");
 };
+
+export const resizeImage = (dataUrl: string, width: number, height: number): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Failed to get 2d context'));
+      
+      const imgRatio = img.width / img.height;
+      const targetRatio = width / height;
+      let drawWidth = width;
+      let drawHeight = height;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      if (imgRatio > targetRatio) {
+        drawWidth = height * imgRatio;
+        offsetX = (width - drawWidth) / 2;
+      } else {
+        drawHeight = width / imgRatio;
+        offsetY = (height - drawHeight) / 2;
+      }
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => reject(new Error('Failed to load image for resizing'));
+    img.src = dataUrl;
+  });
+};

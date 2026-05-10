@@ -4,17 +4,21 @@ import { PromptControls } from './components/PromptControls';
 import { ImageGallery } from './components/ImageGallery';
 import { GeneratedImage, GenerationSettings, AspectRatio } from './types';
 import { generateProductImage } from './services/geminiService';
-import { Sparkles, Camera } from 'lucide-react';
+import { resizeImage } from './utils/fileUtils';
+import { Sparkles, Camera, AlertCircle } from 'lucide-react';
 
 const App = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [shouldStop, setShouldStop] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [settings, setSettings] = useState<GenerationSettings>({
     customPrompt: '',
     preset: null,
-    aspectRatio: AspectRatio.SQUARE
+    aspectRatio: AspectRatio.SQUARE,
+    customWidth: '1080',
+    customHeight: '1080'
   });
 
   const handleStop = () => {
@@ -26,9 +30,39 @@ const App = () => {
 
     setIsGenerating(true);
     setShouldStop(false);
+    setError(null);
     setGeneratedImages([]); // Clear previous results
 
     const promptToUse = settings.customPrompt.trim() || "Professional product photography, studio lighting, high resolution, 4k, clean background";
+
+    let apiAspectRatio = settings.aspectRatio;
+    let customW = 1080;
+    let customH = 1080;
+
+    if (apiAspectRatio === AspectRatio.CUSTOM) {
+        customW = parseInt(settings.customWidth || '1080', 10) || 1080;
+        customH = parseInt(settings.customHeight || '1080', 10) || 1080;
+        
+        const targetRatioNum = customW / customH;
+        let closestRatioStr = AspectRatio.SQUARE;
+        let minDiff = Infinity;
+        
+        const standardRatios = {
+            [AspectRatio.SQUARE]: 1,
+            [AspectRatio.PORTRAIT]: 3/4,
+            [AspectRatio.LANDSCAPE]: 4/3,
+            [AspectRatio.TALL]: 9/16
+        };
+        
+        for (const [ratioStr, ratioVal] of Object.entries(standardRatios)) {
+            const diff = Math.abs(ratioVal - targetRatioNum);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestRatioStr = ratioStr as AspectRatio;
+            }
+        }
+        apiAspectRatio = closestRatioStr;
+    }
 
     // Execute requests sequentially to avoid hitting Gemini API rate limits (429 Resource Exhausted)
     const TARGET_COUNT = 4;
@@ -38,16 +72,21 @@ const App = () => {
         if (shouldStop) break;
 
         try {
-            const url = await generateProductImage({
+            let url = await generateProductImage({
                 imageBase64: selectedImage,
                 prompt: promptToUse,
-                aspectRatio: settings.aspectRatio
+                aspectRatio: apiAspectRatio
             });
             
             // Check again after the request in case it was stopped during the wait
             if (shouldStop) break;
 
             if (url) {
+                // Apply custom resizing if user asked for a custom size
+                if (settings.aspectRatio === AspectRatio.CUSTOM) {
+                     url = await resizeImage(url, customW, customH);
+                }
+
                 const newImage: GeneratedImage = {
                     id: Math.random().toString(36).substr(2, 9),
                     url,
@@ -57,9 +96,16 @@ const App = () => {
                 // Add image to state immediately as it becomes available
                 setGeneratedImages(prev => [...prev, newImage]);
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(`Generation ${i + 1} failed`, e);
-            // Continue to next attempt even if one fails
+            const errorMessage = e?.message || '';
+            if (errorMessage.includes('429') || errorMessage.includes('quota') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
+                setError("API quota exceeded or rate limit reached. Please check your Gemini API plan and billing details.");
+                break; // Stop trying to generate more if we hit a rate limit/quota
+            } else {
+                setError(`Generation failed: ${errorMessage || 'Unknown error'}`);
+                // Continue to next attempt if it's not a quota issue
+            }
         }
 
         // Add a small delay between requests to be respectful of rate limits,
@@ -111,6 +157,7 @@ const App = () => {
                   onClear={() => {
                       setSelectedImage(null);
                       setGeneratedImages([]);
+                      setError(null);
                   }}
               />
             </div>
@@ -127,6 +174,12 @@ const App = () => {
 
           {/* Right Column: Results */}
           <div className="lg:col-span-8">
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p className="text-sm">{error}</p>
+              </div>
+            )}
             {generatedImages.length > 0 || isGenerating ? (
               <ImageGallery images={generatedImages} isGenerating={isGenerating} />
             ) : (
