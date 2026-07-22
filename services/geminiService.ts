@@ -29,9 +29,9 @@ export const generateProductImage = async ({
     const mimeType = matches[1];
     const data = matches[2];
 
-    // Using gemini-2.5-flash-image for standard generation (does not require paid key selection in this context)
+    // Using gemini-3.1-flash-image for standard generation
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
+      model: 'gemini-3.1-flash-image',
       contents: {
         parts: [
           {
