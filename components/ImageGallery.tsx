@@ -27,13 +27,28 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, isGenerating
         </h2>
         
         {images.length > 0 && !isGenerating && (
-          <button 
-            onClick={() => downloadAllAsZip(images)}
-            className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Download All (ZIP)
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => {
+                images.forEach((img, idx) => {
+                  setTimeout(() => {
+                    downloadImage(img.url, `ecomlens_variant_${idx+1}.png`);
+                  }, idx * 250); // Small delay to prevent browser from blocking multiple rapid downloads
+                });
+              }}
+              className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Download All
+            </button>
+            <button 
+              onClick={() => downloadAllAsZip(images)}
+              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors"
+            >
+              <Package className="w-4 h-4" />
+              Download ZIP
+            </button>
+          </div>
         )}
       </div>
 
