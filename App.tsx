@@ -102,7 +102,7 @@ const App = () => {
             if (errorMessage.includes('429') || errorMessage.includes('quota') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
                 setError("API quota exceeded or rate limit reached. Please check your Gemini API plan and billing details.");
                 break; // Stop trying to generate more if we hit a rate limit/quota
-            } else if (errorMessage.includes('500') || errorMessage.includes('UNKNOWN') || errorMessage.includes('xhr error')) {
+            } else if (errorMessage.includes('500') || errorMessage.includes('503') || errorMessage.includes('UNKNOWN') || errorMessage.includes('UNAVAILABLE') || errorMessage.includes('xhr error')) {
                 setError(`API Service Error: ${errorMessage || 'Unknown error'}`);
                 break; // Stop on backend/proxy failures
             } else {

@@ -29,29 +29,28 @@ export const generateProductImage = async ({
     const mimeType = matches[1];
     const data = matches[2];
 
-    // Using gemini-3.1-flash-image for standard generation
+    // Using gemini-3.1-flash-lite-image for standard generation
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-image',
+      model: 'gemini-3.1-flash-lite-image',
       contents: {
         parts: [
-          {
-            text: `Generate a photorealistic, professional product image based on the input image. 
-                   The product in the new image MUST look like the product in the input image.
-                   Apply this style/setting: ${prompt}.
-                   Ensure good resolution and correct lighting.`,
-          },
           {
             inlineData: {
               mimeType: mimeType,
               data: data,
             },
           },
+          {
+            text: `Generate a photorealistic, professional product image based on the input image. 
+                   The product in the new image MUST look like the product in the input image.
+                   Apply this style/setting: ${prompt}.
+                   Ensure good resolution and correct lighting.`,
+          },
         ],
       },
       config: {
         imageConfig: {
           aspectRatio: aspectRatio,
-          // imageSize is NOT supported for gemini-2.5-flash-image, removed.
         },
       },
     });
