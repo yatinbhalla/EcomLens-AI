@@ -35,33 +35,29 @@ const App = () => {
 
     const promptToUse = settings.customPrompt.trim() || "Professional product photography, studio lighting, high resolution, 4k, clean background";
 
-    let apiAspectRatio = settings.aspectRatio;
-    let customW = 1080;
-    let customH = 1080;
+    let customW = 1024;
+    let customH = 1024;
 
-    if (apiAspectRatio === AspectRatio.CUSTOM) {
-        customW = parseInt(settings.customWidth || '1080', 10) || 1080;
-        customH = parseInt(settings.customHeight || '1080', 10) || 1080;
-        
-        const targetRatioNum = customW / customH;
-        let closestRatioStr = AspectRatio.SQUARE;
-        let minDiff = Infinity;
-        
-        const standardRatios = {
-            [AspectRatio.SQUARE]: 1,
-            [AspectRatio.PORTRAIT]: 3/4,
-            [AspectRatio.LANDSCAPE]: 4/3,
-            [AspectRatio.TALL]: 9/16
-        };
-        
-        for (const [ratioStr, ratioVal] of Object.entries(standardRatios)) {
-            const diff = Math.abs(ratioVal - targetRatioNum);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestRatioStr = ratioStr as AspectRatio;
-            }
-        }
-        apiAspectRatio = closestRatioStr;
+    if (settings.aspectRatio === AspectRatio.CUSTOM) {
+        customW = parseInt(settings.customWidth || '1024', 10) || 1024;
+        customH = parseInt(settings.customHeight || '1024', 10) || 1024;
+    } else if (settings.aspectRatio === AspectRatio.PORTRAIT) {
+        customW = 768;
+        customH = 1024;
+    } else if (settings.aspectRatio === AspectRatio.LANDSCAPE) {
+        customW = 1024;
+        customH = 768;
+    } else if (settings.aspectRatio === AspectRatio.TALL) {
+        customW = 576;
+        customH = 1024;
+    }
+    
+    // Resize/pad the input image before sending to Gemini, so Gemini fills the padding
+    let paddedImage = selectedImage;
+    try {
+        paddedImage = await resizeImage(selectedImage, customW, customH);
+    } catch (e) {
+        console.error("Failed to pad image:", e);
     }
 
     // Execute requests sequentially to avoid hitting Gemini API rate limits (429 Resource Exhausted)
@@ -73,20 +69,15 @@ const App = () => {
 
         try {
             let url = await generateProductImage({
-                imageBase64: selectedImage,
+                imageBase64: paddedImage,
                 prompt: promptToUse,
-                aspectRatio: apiAspectRatio
+                aspectRatio: settings.aspectRatio
             });
             
             // Check again after the request in case it was stopped during the wait
             if (shouldStop) break;
 
             if (url) {
-                // Apply custom resizing if user asked for a custom size
-                if (settings.aspectRatio === AspectRatio.CUSTOM) {
-                     url = await resizeImage(url, customW, customH);
-                }
-
                 const newImage: GeneratedImage = {
                     id: Math.random().toString(36).substr(2, 9),
                     url,

@@ -8,8 +8,43 @@ export const fileToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
     reader.onload = () => {
       if (typeof reader.result === 'string') {
-        // Return the full Data URL (e.g., "data:image/png;base64,...")
-        resolve(reader.result);
+        const dataUrl = reader.result;
+        
+        // Resize image if it's too large to prevent API errors
+        const img = new Image();
+        img.onload = () => {
+            const MAX_SIZE = 1024;
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > MAX_SIZE || height > MAX_SIZE) {
+                if (width > height) {
+                    height = Math.round((height * MAX_SIZE) / width);
+                    width = MAX_SIZE;
+                } else {
+                    width = Math.round((width * MAX_SIZE) / height);
+                    height = MAX_SIZE;
+                }
+            }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                resolve(dataUrl); // Fallback to original
+                return;
+            }
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Use JPEG for smaller payload
+            resolve(canvas.toDataURL('image/jpeg', 0.9));
+        };
+        img.onerror = () => resolve(dataUrl); // Fallback to original on error
+        img.src = dataUrl;
       } else {
         reject(new Error('Failed to convert file to base64'));
       }
@@ -75,10 +110,12 @@ export const resizeImage = (dataUrl: string, width: number, height: number): Pro
         offsetY = (height - drawHeight) / 2;
       }
 
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-      resolve(canvas.toDataURL('image/png'));
+      resolve(canvas.toDataURL('image/jpeg', 0.9));
     };
     img.onerror = () => reject(new Error('Failed to load image for resizing'));
     img.src = dataUrl;

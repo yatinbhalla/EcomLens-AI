@@ -29,9 +29,9 @@ export const generateProductImage = async ({
     const mimeType = matches[1];
     const data = matches[2];
 
-    // Using gemini-3.1-flash-lite-image for standard generation
+    // Using gemini-2.5-flash-image for standard generation
     const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite-image',
+      model: 'gemini-2.5-flash-image',
       contents: {
         parts: [
           {
@@ -47,11 +47,6 @@ export const generateProductImage = async ({
                    Ensure good resolution and correct lighting.`,
           },
         ],
-      },
-      config: {
-        imageConfig: {
-          aspectRatio: aspectRatio,
-        },
       },
     });
 
