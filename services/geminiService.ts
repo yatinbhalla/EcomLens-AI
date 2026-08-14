@@ -41,10 +41,12 @@ export const generateProductImage = async ({
             },
           },
           {
-            text: `Generate a photorealistic, professional product image based on the input image. 
-                   The product in the new image MUST look like the product in the input image.
-                   Apply this style/setting: ${prompt}.
-                   Ensure good resolution and correct lighting.`,
+            text: `PRODUCT BACKGROUND REPLACEMENT.
+CRITICAL INSTRUCTIONS:
+1. You MUST keep the main product EXACTLY as it appears in the uploaded image.
+2. DO NOT change the product's shape, color, details, texture, or perspective.
+3. Replace ONLY the background and lighting to match this setting: ${prompt}.
+4. Ensure the product integrates naturally into the new background with realistic shadows and reflections.`,
           },
         ],
       },

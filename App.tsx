@@ -60,8 +60,8 @@ const App = () => {
         console.error("Failed to pad image:", e);
     }
 
-    // Execute requests sequentially to avoid hitting Gemini API rate limits (429 Resource Exhausted)
-    const TARGET_COUNT = 4;
+    // Execute a single request to avoid hitting Gemini API rate limits (429 Resource Exhausted)
+    const TARGET_COUNT = 1;
     
     for (let i = 0; i < TARGET_COUNT; i++) {
         // Check if we should stop before each request
