@@ -60,12 +60,17 @@ const App = () => {
         console.error("Failed to pad image:", e);
     }
 
-    // Execute a single request to avoid hitting Gemini API rate limits (429 Resource Exhausted)
-    const TARGET_COUNT = 1;
+    // Execute up to 4 requests sequentially
+    const TARGET_COUNT = 4;
     
     for (let i = 0; i < TARGET_COUNT; i++) {
         // Check if we should stop before each request
         if (shouldStop) break;
+
+        // Add a small delay between requests to help avoid rapid rate limit triggers
+        if (i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+        }
 
         try {
             let url = await generateProductImage({
