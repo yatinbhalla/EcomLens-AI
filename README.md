@@ -1,4 +1,4 @@
-# EcomLens AI 📸
+# EcomLens AI 📸 
 
 ### Turn any product photo into professional e-commerce listings in seconds — powered by Gemini 2.5 Flash AI.
 
