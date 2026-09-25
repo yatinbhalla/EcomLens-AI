@@ -85,7 +85,50 @@ export const downloadAllAsZip = async (images: GeneratedImage[]) => {
   saveAs(content, "ecomlens_product_images.zip");
 };
 
-export const resizeImage = (dataUrl: string, width: number, height: number): Promise<string> => {
+/**
+ * Optimizes an input product image for the Gemini multimodal API.
+ * Keeps the full image without any cropping or distortion,
+ * constraining the maximum dimension to reduce token consumption and avoid quota limits.
+ */
+export const optimizeReferenceImage = (dataUrl: string, maxDimension = 768): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = Math.round((height * maxDimension) / width);
+          width = maxDimension;
+        } else {
+          width = Math.round((width * maxDimension) / height);
+          height = maxDimension;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Return high-quality JPEG for compact token payload
+      resolve(canvas.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = () => reject(new Error('Failed to load image for optimization'));
+    img.src = dataUrl;
+  });
+};
+
+export const resizeImage = (dataUrl: string, width: number, height: number, mode: 'contain' | 'cover' = 'contain'): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -102,12 +145,23 @@ export const resizeImage = (dataUrl: string, width: number, height: number): Pro
       let offsetX = 0;
       let offsetY = 0;
 
-      if (imgRatio > targetRatio) {
-        drawWidth = height * imgRatio;
-        offsetX = (width - drawWidth) / 2;
+      if (mode === 'cover') {
+        if (imgRatio > targetRatio) {
+          drawWidth = height * imgRatio;
+          offsetX = (width - drawWidth) / 2;
+        } else {
+          drawHeight = width / imgRatio;
+          offsetY = (height - drawHeight) / 2;
+        }
       } else {
-        drawHeight = width / imgRatio;
-        offsetY = (height - drawHeight) / 2;
+        // Contain (letterbox/pillarbox) so nothing is cropped
+        if (imgRatio > targetRatio) {
+          drawHeight = width / imgRatio;
+          offsetY = (height - drawHeight) / 2;
+        } else {
+          drawWidth = height * imgRatio;
+          offsetX = (width - drawWidth) / 2;
+        }
       }
 
       ctx.fillStyle = '#FFFFFF';

@@ -132,6 +132,37 @@ export const PromptControls: React.FC<PromptControlsProps> = ({
         />
       </div>
 
+      {/* Variant Count Selector */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-medium text-gray-700">
+            Number of Variants
+          </label>
+          <span className="text-xs text-gray-500">
+            {(settings.variantCount ?? 4)} {((settings.variantCount ?? 4) === 1 ? 'image' : 'images')}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {[1, 2, 4].map((count) => {
+            const isSelected = (settings.variantCount ?? 4) === count;
+            return (
+              <button
+                key={count}
+                type="button"
+                onClick={() => onChange({ ...settings, variantCount: count })}
+                className={`py-2 px-3 text-sm font-medium rounded-lg border transition-all ${
+                  isSelected
+                    ? 'bg-blue-50 border-blue-500 text-blue-700 font-semibold shadow-sm'
+                    : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {count} {count === 1 ? 'Variant' : 'Variants'}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Action Buttons */}
       <div className="space-y-3">
         {isGenerating ? (

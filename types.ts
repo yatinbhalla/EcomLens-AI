@@ -22,4 +22,5 @@ export interface GenerationSettings {
   aspectRatio: AspectRatio;
   customWidth?: string;
   customHeight?: string;
+  variantCount?: number;
 }
