@@ -14,7 +14,20 @@ export enum AspectRatio {
   CUSTOM = 'CUSTOM'
 }
 
-export type PresetStyle = 'Amazon' | 'Meesho' | 'Lifestyle' | 'Premium' | 'Minimalist';
+export type PresetStyle =
+  | 'Amazon'
+  | 'Meesho'
+  | 'Lifestyle'
+  | 'Premium'
+  | 'Minimalist'
+  | 'Studio Podium'
+  | 'Marble Luxury'
+  | 'Outdoor Nature'
+  | 'Artisan Wood'
+  | 'Kitchen & Home'
+  | 'Neon Cyber'
+  | 'Hero Showcase'
+  | 'Pastel Studio';
 
 export interface GenerationSettings {
   customPrompt: string;

@@ -92,9 +92,20 @@ export const PromptControls: React.FC<PromptControlsProps> = ({
 
       {/* Preset Styles */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Style Presets
-        </label>
+        <div className="flex items-center justify-between mb-3">
+          <label className="text-sm font-medium text-gray-700">
+            Style Presets
+          </label>
+          {settings.preset && (
+            <button
+              type="button"
+              onClick={() => onChange({ ...settings, preset: null, customPrompt: '' })}
+              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+            >
+              Clear Preset
+            </button>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(PRESET_PROMPTS) as PresetStyle[]).map((style) => {
             const Icon = PRESET_ICONS[style];
@@ -102,16 +113,18 @@ export const PromptControls: React.FC<PromptControlsProps> = ({
             return (
               <button
                 key={style}
+                type="button"
                 onClick={() => handlePresetClick(style)}
+                title={PRESET_PROMPTS[style]}
                 className={`
-                  flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all border
+                  flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border
                   ${isActive 
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm' 
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-xs ring-1 ring-indigo-400' 
+                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
                   }
                 `}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'fill-current' : ''}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-indigo-600' : 'text-gray-500'}`} />
                 {style}
               </button>
             );

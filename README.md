@@ -41,7 +41,7 @@
 
 E-commerce sellers waste hours and thousands of dollars on product photography — only to need reshoots every time a platform, format, or style requirement changes.
 
-**EcomLens AI eliminates that entirely.** Upload any product photo, select a platform-optimized preset or write a custom prompt, and the app calls Gemini 2.5 Flash Image to generate **4 studio-quality variants in ~30 seconds** — across 5 e-commerce style profiles and 5 output aspect ratios, all exportable as a single ZIP.
+**EcomLens AI eliminates that entirely.** Upload any product photo, select a platform-optimized preset or write a custom prompt, and the app calls Gemini to generate **studio-quality variants in ~30 seconds** — across 13 e-commerce style profiles and 5 output aspect ratios, all exportable as a single ZIP.
 
 **Reduced manual photo generation and editing time by ~2 hours per day** for active sellers, as measured by 3 daily users who replaced their previous manual workflow entirely — by architecting a sequential Gemini multimodal pipeline with platform-optimized prompt presets, canvas-based resizing, and a React 19 streaming UI that delivers results as they generate.
 
@@ -72,7 +72,7 @@ Shipped from zero to deployed in a single weekend as a solo AI product build.
 ## ⚙️ Key Features
 
 - **Validated with 3 daily active users** who replaced their manual photo-editing workflow, saving ~2 hours/day per seller across Amazon, Meesho, and Instagram listings
-- **Engineered 5 platform-specific style presets** (Amazon, Meesho, Lifestyle, Premium, Minimalist) with fine-tuned prompt templates — eliminating guesswork for non-technical sellers
+- **Engineered 13 platform and marketplace style presets** (Amazon, Meesho, Lifestyle, Premium, Minimalist, Studio Podium, Marble Luxury, Outdoor Nature, Artisan Wood, Kitchen & Home, Neon Cyber, Hero Showcase, Pastel Studio) with fine-tuned prompt templates — eliminating guesswork for sellers
 - **Architected sequential Gemini API calls** with 500ms backoff and automatic 429 / `RESOURCE_EXHAUSTED` detection — preventing quota burnouts during batch generation
 - **Implemented 5 output aspect ratios** (1:1, 3:4, 4:3, 9:16, Custom up to 4096×4096) with canvas-based pixel-perfect resizing for any platform's listing spec
 - **Shipped real-time streaming results UI** — skeleton placeholders update as each of the 4 variants resolves, reducing perceived wait by surfacing results progressively
@@ -214,6 +214,14 @@ The fidelity instruction (`MUST look like the product`) is non-negotiable and pr
 | **Lifestyle** | Social / brand content | In-context usage, blurred natural bg, warm sunlight, organic feel |
 | **Premium** | Luxury / D2C brand | Dark moody bg, dramatic rim lighting, cinematic high contrast |
 | **Minimalist** | Trendy / editorial | Solid pastel bg, hard shadows, pop-art composition |
+| **Studio Podium** | Cosmetics & Tech | Minimalist cylindrical podium pedestal, soft neutral backdrop, diffuse studio lighting |
+| **Marble Luxury** | Fragrance & Jewelry | Polished Carrara marble slab, realistic reflections, soft window daylight |
+| **Outdoor Nature** | Eco & Wellness | Fresh outdoor setting, lush botanical foliage, warm dappled natural sunlight |
+| **Artisan Wood** | Handcrafted & Etsy | Warm rustic oak tabletop, soft morning sidelight, authentic organic grain |
+| **Kitchen & Home** | Cookware & Homeware | Modern bright kitchen marble countertop, clean tile backsplash, warm ambient lighting |
+| **Neon Cyber** | Gaming & Gadgets | Dark glossy reflective surface, dramatic cyan and violet rim lighting |
+| **Hero Showcase** | Footwear & Ads | Commercial hero advertising shot, subtle gradient backdrop, soft spotlight halo |
+| **Pastel Studio** | DTC & Fashion | Soft blush pastel backdrop, gentle softbox lighting, smooth seamless floor |
 
 ### Generation Loop & Rate-Limit Handling
 
